@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar — 203 pre-token protocols, ranked by launch value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">◉</span> Token Launch Radar</div>
+  <div class="meta">snapshot <span id="asof">—</span> · model <b>radar-2</b> · source: DefiLlama</div>
+</header>
+<main>
+  <section class="lede">
+    <h1>Which tokenless protocol launches biggest?</h1>
+    <p class="sub">Every protocol in the sealed DefiLlama snapshot that has <b>no token</b> and is <b>not a wrapped or staked product</b> of something that already trades, ranked by the launch value a token would have on day one. The implied value is the entry&rsquo;s own claim, worked out from the snapshot&rsquo;s own figures — TVL, 7-day growth, how long it has run with no token, and how many chains it runs on. Nothing here is a price prediction, and no protocol has promised a token.</p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="controls" aria-label="Filters">
+    <div class="tabs" role="tablist">
+      <button id="tab-pre" class="tab active" data-tab="pre" role="tab" aria-selected="true">Pre-token board</button>
+      <button id="tab-live" class="tab" data-tab="live" role="tab" aria-selected="false">Already trading (set aside)</button>
+    </div>
+    <div class="filters">
+      <label>Search <input id="q" type="search" placeholder="name, slug or category" autocomplete="off"></label>
+      <label>Category <select id="category"><option value="">All categories</option></select></label>
+      <label>Chain <select id="chain"><option value="">All chains</option></select></label>
+      <label>Min TVL <select id="minTvl">
+        <option value="0">Any</option>
+        <option value="100000000">≥ $100M</option>
+        <option value="500000000">≥ $500M</option>
+        <option value="1000000000">≥ $1B</option>
+      </select></label>
+      <label class="check"><input id="watchlist" type="checkbox"> Watchlist only</label>
+      <label>Sort <select id="sort">
+        <option value="implied">Implied value</option>
+        <option value="tvl">TVL</option>
+        <option value="growth">7-day growth</option>
+        <option value="age">Age</option>
+        <option value="name">Name</option>
+      </select></label>
+    </div>
+  </section>
+
+  <section class="board">
+    <table id="board">
+      <thead><tr>
+        <th class="num">#</th>
+        <th>Protocol</th>
+        <th>Category</th>
+        <th>Chains</th>
+        <th class="num">TVL</th>
+        <th class="num">7d</th>
+        <th class="num">Age</th>
+        <th class="num">Implied launch value</th>
+        <th>Model</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="empty" id="empty" hidden>No protocol matches these filters. Clear the search or widen the filters.</p>
+    <p class="count" id="count"></p>
+  </section>
+
+  <section class="model" id="model">
+    <h2>How the implied value is worked out</h2>
+    <p class="formula">implied = round( TVL × 0.30 × category × growth × maturity × chains )</p>
+    <div class="model-grid">
+      <div>
+        <h3>Category — a stated prior</h3>
+        <table class="mini">
+          <tr><td>Lending, CDP, collateral</td><td class="num">×1.15</td></tr>
+          <tr><td>Dexs, derivatives, perps</td><td class="num">×1.12</td></tr>
+          <tr><td>Yield, yield aggregator, leveraged farming</td><td class="num">×1.08</td></tr>
+          <tr><td>Restaking, staking pool, RWA, basis, curators</td><td class="num">×1.05</td></tr>
+          <tr><td>Everything else</td><td class="num">×1.00</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Growth — asymmetric</h3>
+        <p>7-day change, clamped to −60%…+120%. A rise counts 0.6 of the move; a fall counts 0.9 of it. Momentum down is the stronger signal. No change recorded counts as 0.</p>
+        <h3>Maturity — time with no token</h3>
+        <p>0.55 at day zero, rising linearly to 1.00 at four years. A protocol that held value for four years without a token launches from strength. Unknown listing date counts as 365 days.</p>
+        <h3>Chains — breadth</h3>
+        <p>+2% per extra chain beyond the first, capped at +16% (8 extra chains).</p>
+      </div>
+    </div>
+    <h3>What is left out, and why</h3>
+    <p>There is no TVL cutoff: the snapshot&rsquo;s $50M floor is the floor the snapshot itself was selected at, not a ranking rule, so a pre-token protocol below it is still a launch candidate — the board covers all 203 of them. Anything with a live token (a market cap, a CoinGecko id, or a symbol) is set aside on the <b>Already trading</b> tab at the market&rsquo;s own value — it is not a launch candidate. Bridges, canonical bridges, liquid staking, liquid restaking, restaked BTC and CEX products are excluded because they are wrapped or staked versions of something that already trades, as are versioned re-releases (&ldquo;Foo v2&rdquo;) and children of a protocol that already trades. The house watchlist of 40 is always covered: it is the set the brief names, so no watchlist row is dropped by these rules.</p>
+    <p class="warn">Implied value is a model claim, not a price. It says what a launch would be worth if the market priced it like the value already locked in the protocol. A high rank is not a promise that a token exists, that one is coming, or that farming it pays.</p>
+  </section>
+</main>
+<footer>
+  <p>Token Launch Radar · model radar-2 · built from the sealed DefiLlama snapshot only · no live data, no prices fetched at view time.</p>
+</footer>
+
+<dialog id="detail" aria-label="Protocol detail">
+  <div id="detail-body"></div>
+  <form method="dialog"><button class="close" value="close">Close</button></form>
+</dialog>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
